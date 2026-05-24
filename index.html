@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morgan Creative Studio — Web Design & Development</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080a0f;
+    --bg-2: #0d1017;
+    --bg-3: #111520;
+    --surface: #151a27;
+    --surface-2: #1c2235;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text-primary: #f0f2f8;
+    --text-secondary: #8b93a7;
+    --text-muted: #4d5568;
+    --accent: #4f7cff;
+    --accent-bright: #6b93ff;
+    --accent-dim: rgba(79,124,255,0.15);
+    --accent-glow: rgba(79,124,255,0.25);
+    --gradient-accent: linear-gradient(135deg, #4f7cff 0%, #7c4fff 100%);
+    --font-head: 'Space Grotesk', sans-serif;
+    --font-body: 'Outfit', sans-serif;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- UTILITIES ---- */
+  .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+  .section { padding: 112px 0; }
+  .section-sm { padding: 72px 0; }
+  .tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-body); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);
+    background: var(--accent-dim); border: 1px solid rgba(79,124,255,0.2);
+    padding: 6px 14px; border-radius: 100px;
+    margin-bottom: 24px;
+  }
+  .tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+  h1, h2, h3, h4 { font-family: var(--font-head); font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; }
+  h1 { font-size: clamp(2.8rem, 6vw, 4.8rem); font-weight: 700; }
+  h2 { font-size: clamp(2rem, 4vw, 3rem); }
+  h3 { font-size: clamp(1.2rem, 2.5vw, 1.5rem); font-weight: 500; }
+
+  p { color: var(--text-secondary); line-height: 1.75; }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 28px; border-radius: var(--radius-md);
+    font-family: var(--font-head); font-size: 15px; font-weight: 500;
+    cursor: pointer; border: none; text-decoration: none;
+    transition: var(--transition); white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--gradient-accent); color: #fff;
+    box-shadow: 0 4px 20px rgba(79,124,255,0.3);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(79,124,255,0.45);
+  }
+  .btn-secondary {
+    background: transparent; color: var(--text-primary);
+    border: 1px solid var(--border-hover);
+  }
+  .btn-secondary:hover {
+    background: var(--surface); border-color: var(--border-hover);
+    transform: translateY(-2px);
+  }
+  .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 0; }
+
+  /* FADE IN ANIMATION */
+  .fade-up {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.65s cubic-bezier(0.4,0,0.2,1), transform 0.65s cubic-bezier(0.4,0,0.2,1);
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .fade-up-delay-1 { transition-delay: 0.1s; }
+  .fade-up-delay-2 { transition-delay: 0.2s; }
+  .fade-up-delay-3 { transition-delay: 0.3s; }
+  .fade-up-delay-4 { transition-delay: 0.4s; }
+
+  /* ---- NAVBAR ---- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 0 24px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid transparent;
+    transition: background var(--transition-slow), border-color var(--transition-slow);
+  }
+  nav.scrolled {
+    background: rgba(8,10,15,0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-color: var(--border);
+  }
+  .nav-logo {
+    font-family: var(--font-head); font-size: 17px; font-weight: 600;
+    color: var(--text-primary); text-decoration: none; letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; align-items: center; gap: 8px; }
+  .nav-links a {
+    font-family: var(--font-body); font-size: 14px; font-weight: 400;
+    color: var(--text-secondary); text-decoration: none; padding: 8px 14px;
+    border-radius: var(--radius-sm); transition: var(--transition);
+  }
+  .nav-links a:hover { color: var(--text-primary); background: var(--surface); }
+  .nav-cta { padding: 10px 20px; font-size: 14px; }
+  .nav-menu-btn {
+    display: none; background: none; border: 1px solid var(--border);
+    color: var(--text-secondary); cursor: pointer; padding: 8px;
+    border-radius: var(--radius-sm); transition: var(--transition);
+  }
+  .nav-menu-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
+
+  /* ---- HERO ---- */
+  .hero {
+    min-height: 100vh; display: flex; align-items: center;
+    position: relative; overflow: hidden; padding: 120px 24px 80px;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .hero-blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: 0.18;
+    animation: blobFloat 12s ease-in-out infinite;
+  }
+  .hero-blob-1 {
+    width: 600px; height: 600px; top: -100px; right: -100px;
+    background: radial-gradient(circle, #4f7cff 0%, transparent 70%);
+  }
+  .hero-blob-2 {
+    width: 400px; height: 400px; bottom: 0; left: -80px;
+    background: radial-gradient(circle, #7c4fff 0%, transparent 70%);
+    animation-delay: -5s;
+  }
+  @keyframes blobFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(20px, -20px) scale(1.03); }
+    66% { transform: translate(-15px, 10px) scale(0.97); }
+  }
+  .hero-inner {
+    position: relative; z-index: 1;
+    max-width: 1160px; margin: 0 auto; width: 100%;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-body); font-size: 13px; font-weight: 500;
+    color: var(--text-secondary); letter-spacing: 0.05em;
+    margin-bottom: 32px;
+  }
+  .hero-eyebrow-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 12px var(--accent); animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+  .hero h1 { margin-bottom: 28px; max-width: 780px; }
+  .hero h1 .accent-word {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.15rem); color: var(--text-secondary);
+    max-width: 560px; margin-bottom: 48px; line-height: 1.7;
+  }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .hero-scroll-hint {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--text-muted); font-size: 12px; letter-spacing: 0.05em;
+    animation: scrollBounce 2.5s ease-in-out infinite;
+  }
+  .hero-scroll-hint svg { width: 16px; height: 16px; }
+  @keyframes scrollBounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.5; }
+    50% { transform: translateX(-50%) translateY(6px); opacity: 1; }
+  }
+
+  /* ---- PROOF STRIP ---- */
+  .proof-strip { padding: 56px 0; }
+  .proof-strip-inner {
+    display: flex; align-items: stretch; gap: 0;
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    background: var(--bg-2); overflow: hidden;
+  }
+  .proof-metric {
+    flex: 1; padding: 36px 32px; text-align: center;
+    border-right: 1px solid var(--border); transition: var(--transition);
+  }
+  .proof-metric:last-child { border-right: none; }
+  .proof-metric:hover { background: var(--surface); }
+  .proof-number {
+    font-family: var(--font-head); font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 700; letter-spacing: -0.03em;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; display: block; line-height: 1;
+    margin-bottom: 8px;
+  }
+  .proof-label { font-size: 13px; color: var(--text-muted); font-weight: 400; }
+  .proof-logos { padding: 32px; border-top: 1px solid var(--border); }
+  .proof-logos-label { font-size: 12px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; text-align: center; margin-bottom: 20px; }
+  .proof-logo-row {
+    display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;
+  }
+  .proof-logo-pill {
+    height: 32px; padding: 0 18px; border-radius: 100px;
+    border: 1px solid var(--border); background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-size: 13px; font-weight: 500;
+    color: var(--text-muted); letter-spacing: -0.01em;
+    transition: var(--transition);
+  }
+  .proof-logo-pill:hover { border-color: var(--border-hover); color: var(--text-secondary); }
+
+  /* ---- ABOUT ---- */
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1.6fr; gap: 80px; align-items: center;
+  }
+  .about-avatar-wrap { display: flex; justify-content: center; }
+  .about-avatar {
+    width: 200px; height: 200px; border-radius: 50%;
+    background: var(--gradient-accent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-size: 4rem; font-weight: 700;
+    color: #fff; letter-spacing: -0.04em;
+    box-shadow: 0 0 0 1px rgba(79,124,255,0.3), 0 24px 60px rgba(79,124,255,0.2);
+    position: relative;
+  }
+  .about-avatar::after {
+    content: '';
+    position: absolute; inset: -8px; border-radius: 50%;
+    border: 1px solid rgba(79,124,255,0.15);
+  }
+  .about-content h2 { margin-bottom: 20px; }
+  .about-content p { margin-bottom: 16px; }
+  .about-vals {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px;
+  }
+  .about-val {
+    padding: 8px 16px; border-radius: 100px;
+    border: 1px solid var(--border); background: var(--surface);
+    font-size: 13px; color: var(--text-secondary); font-weight: 400;
+    transition: var(--transition);
+  }
+  .about-val:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  /* ---- SERVICES ---- */
+  .section-head { text-align: center; max-width: 560px; margin: 0 auto 64px; }
+  .section-head .tag { margin-bottom: 20px; }
+  .section-head h2 { margin-bottom: 16px; }
+  .section-head p { font-size: 1.05rem; }
+
+  .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .service-card {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 36px;
+    transition: var(--transition); position: relative; overflow: hidden;
+  }
+  .service-card::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 60%);
+    opacity: 0; transition: var(--transition);
+  }
+  .service-card:hover { border-color: rgba(79,124,255,0.25); transform: translateY(-3px); }
+  .service-card:hover::before { opacity: 1; }
+  .service-icon {
+    width: 48px; height: 48px; border-radius: var(--radius-sm);
+    background: var(--accent-dim); border: 1px solid rgba(79,124,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px; color: var(--accent);
+  }
+  .service-icon svg { width: 22px; height: 22px; }
+  .service-card h3 { margin-bottom: 12px; font-size: 1.15rem; }
+  .service-card > p { font-size: 14px; margin-bottom: 24px; }
+  .service-bullets { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .service-bullets li {
+    font-size: 13px; color: var(--text-secondary);
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .service-bullets li::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0; margin-top: 7px;
+  }
+
+  /* ---- WHY ---- */
+  .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .why-card {
+    padding: 32px; border-radius: var(--radius-lg);
+    border: 1px solid var(--border); background: var(--bg-2);
+    transition: var(--transition);
+  }
+  .why-card:hover { border-color: var(--border-hover); background: var(--surface); }
+  .why-icon {
+    font-size: 28px; margin-bottom: 20px; display: block; line-height: 1;
+  }
+  .why-card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+  .why-card p { font-size: 14px; }
+
+  /* ---- PROCESS ---- */
+  .process-list { display: flex; flex-direction: column; gap: 0; max-width: 720px; margin: 0 auto; }
+  .process-step {
+    display: grid; grid-template-columns: 64px 1fr; gap: 28px;
+    position: relative; padding-bottom: 40px;
+  }
+  .process-step:last-child { padding-bottom: 0; }
+  .process-step-left { display: flex; flex-direction: column; align-items: center; }
+  .process-num {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--surface-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-size: 15px; font-weight: 600;
+    color: var(--accent); flex-shrink: 0; position: relative; z-index: 1;
+    transition: var(--transition);
+  }
+  .process-step:hover .process-num {
+    background: var(--accent-dim); border-color: rgba(79,124,255,0.4);
+  }
+  .process-line {
+    width: 1px; flex: 1; background: var(--border); margin-top: 8px;
+  }
+  .process-step:last-child .process-line { display: none; }
+  .process-content { padding-top: 10px; }
+  .process-content h3 { font-size: 1.1rem; margin-bottom: 8px; }
+  .process-content p { font-size: 14px; }
+
+  /* ---- TESTIMONIALS ---- */
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .testi-card {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 32px;
+    display: flex; flex-direction: column; gap: 24px;
+    transition: var(--transition);
+  }
+  .testi-card:hover { border-color: var(--border-hover); }
+  .testi-stars { display: flex; gap: 4px; color: #f5a623; font-size: 14px; }
+  .testi-quote { font-size: 15px; color: var(--text-secondary); line-height: 1.7; flex: 1; }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-size: 14px; font-weight: 600;
+    color: #fff; flex-shrink: 0;
+  }
+  .testi-name { font-family: var(--font-head); font-size: 14px; font-weight: 500; }
+  .testi-role { font-size: 12px; color: var(--text-muted); }
+
+  /* ---- FAQ ---- */
+  .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+  .faq-item {
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--bg-2); overflow: hidden; transition: var(--transition);
+  }
+  .faq-item.open { border-color: rgba(79,124,255,0.2); }
+  .faq-q {
+    width: 100%; padding: 20px 24px; background: none; border: none;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    cursor: pointer; text-align: left;
+    font-family: var(--font-head); font-size: 15px; font-weight: 500;
+    color: var(--text-primary); transition: var(--transition);
+  }
+  .faq-q:hover { color: var(--accent); }
+  .faq-icon {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 16px; color: var(--text-secondary);
+    transition: var(--transition);
+  }
+  .faq-item.open .faq-icon { background: var(--accent-dim); border-color: rgba(79,124,255,0.3); color: var(--accent); transform: rotate(45deg); }
+  .faq-a {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), padding 0.35s;
+    font-size: 14px; color: var(--text-secondary); line-height: 1.75;
+  }
+  .faq-a-inner { padding: 0 24px 20px; }
+
+  /* ---- FINAL CTA ---- */
+  .cta-section {
+    padding: 120px 0; text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(79,124,255,0.08) 0%, transparent 70%);
+  }
+  .cta-inner { position: relative; z-index: 1; }
+  .cta-section h2 { margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto; }
+  .cta-section p { max-width: 480px; margin: 0 auto 48px; font-size: 1.05rem; }
+  .cta-actions { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .cta-note { margin-top: 20px; font-size: 13px; color: var(--text-muted); }
+
+  /* ---- FOOTER ---- */
+  footer {
+    padding: 40px 24px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    max-width: 1160px; margin: 0 auto;
+  }
+  .footer-logo {
+    font-family: var(--font-head); font-size: 16px; font-weight: 600;
+    color: var(--text-secondary); text-decoration: none;
+  }
+  .footer-logo span { color: var(--accent); }
+  .footer-copy { font-size: 13px; color: var(--text-muted); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+  .footer-links a:hover { color: var(--text-secondary); }
+
+  /* ---- MOBILE ---- */
+  @media (max-width: 900px) {
+    .section { padding: 80px 0; }
+    .about-grid { grid-template-columns: 1fr; gap: 48px; text-align: center; }
+    .about-vals { justify-content: center; }
+    .services-grid { grid-template-columns: 1fr; }
+    .why-grid { grid-template-columns: 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 700px) {
+    .nav-links a:not(.btn) { display: none; }
+    .nav-menu-btn { display: block; }
+    .proof-strip-inner { flex-direction: column; }
+    .proof-metric { border-right: none; border-bottom: 1px solid var(--border); }
+    .proof-metric:last-child { border-bottom: none; }
+    .hero-actions .btn { flex: 1; justify-content: center; }
+    .cta-actions .btn { width: 100%; justify-content: center; }
+    .about-avatar { width: 140px; height: 140px; font-size: 3rem; }
+    footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a class="nav-logo" href="#">Morgan<span>.</span></a>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#process">Process</a>
+    <a href="#testimonials">Work</a>
+    <a class="btn btn-primary nav-cta" href="#cta">Book a Call</a>
+  </div>
+  <button class="nav-menu-btn" aria-label="Menu">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+      <line x1="2" y1="5" x2="16" y2="5"/><line x1="2" y1="9" x2="16" y2="9"/><line x1="2" y1="13" x2="16" y2="13"/>
+    </svg>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow fade-up">
+      <span class="hero-eyebrow-dot"></span>
+      Available for new projects · Q3 2025
+    </div>
+    <h1 class="fade-up fade-up-delay-1">
+      Design that<br><span class="accent-word">converts</span> —<br>not just impresses.
+    </h1>
+    <p class="hero-sub fade-up fade-up-delay-2">
+      I help ambitious brands turn visitors into customers with conversion-focused web design, strategic branding, and full-stack development.
+    </p>
+    <div class="hero-actions fade-up fade-up-delay-3">
+      <a href="#cta" class="btn btn-primary">
+        Book a Discovery Call
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 8h10M9 4l4 4-4 4"/>
+        </svg>
+      </a>
+      <a href="#services" class="btn btn-secondary">View Services</a>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>Scroll</span>
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M8 3v10M4 10l4 4 4-4"/>
+    </svg>
+  </div>
+</section>
+
+<!-- PROOF STRIP -->
+<section class="proof-strip section-sm">
+  <div class="container">
+    <div class="proof-strip-inner fade-up">
+      <div class="proof-metric">
+        <span class="proof-number">60+</span>
+        <span class="proof-label">Projects delivered</span>
+      </div>
+      <div class="proof-metric">
+        <span class="proof-number">4.8×</span>
+        <span class="proof-label">Avg. conversion lift</span>
+      </div>
+      <div class="proof-metric">
+        <span class="proof-number">7yrs</span>
+        <span class="proof-label">In the industry</span>
+      </div>
+      <div class="proof-metric">
+        <span class="proof-number">100%</span>
+        <span class="proof-label">Client satisfaction</span>
+      </div>
+    </div>
+    <div class="proof-logos fade-up fade-up-delay-1">
+      <p class="proof-logos-label">Trusted by teams at</p>
+      <div class="proof-logo-row">
+        <span class="proof-logo-pill">Axiom Labs</span>
+        <span class="proof-logo-pill">Meridian</span>
+        <span class="proof-logo-pill">Sunken Studio</span>
+        <span class="proof-logo-pill">Arcform</span>
+        <span class="proof-logo-pill">NovaPulse</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-avatar-wrap fade-up">
+        <div class="about-avatar">MC</div>
+      </div>
+      <div class="about-content fade-up fade-up-delay-1">
+        <div class="tag">About Morgan</div>
+        <h2>Strategy meets<br>execution — always.</h2>
+        <p style="margin-top:20px;">I'm Morgan, a freelance web designer and developer based in New York. For the past 7 years, I've been helping startups and scale-ups build digital experiences that don't just look beautiful — they drive measurable business results.</p>
+        <p>My approach is simple: understand the business first, design second. Every pixel, every word, every interaction is intentional. I work end-to-end — from brand strategy through design to production-ready code — so nothing gets lost in translation.</p>
+        <p>No bloated teams, no account managers, no offshore handoffs. Just direct collaboration with someone who cares deeply about your success.</p>
+        <div class="about-vals">
+          <span class="about-val">Strategy-first</span>
+          <span class="about-val">Full-stack capable</span>
+          <span class="about-val">Fast delivery</span>
+          <span class="about-val">Direct comms</span>
+          <span class="about-val">Revenue-focused</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div class="tag">Services</div>
+      <h2>Everything you need to grow online</h2>
+      <p>Four core disciplines, executed with precision. From first impression to final conversion.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card fade-up fade-up-delay-1">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18"/><circle cx="7" cy="6" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3>Web Design & UX</h3>
+        <p>Conversion-focused design that guides visitors from landing to action — beautifully.</p>
+        <ul class="service-bullets">
+          <li>Landing pages & full site design</li>
+          <li>UX wireframing & prototyping</li>
+          <li>Mobile-first responsive layouts</li>
+          <li>Design system creation</li>
+          <li>CRO-informed component design</li>
+        </ul>
+      </div>
+      <div class="service-card fade-up fade-up-delay-2">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h3>Branding & Identity</h3>
+        <p>Brand systems that communicate your value instantly and build lasting recognition.</p>
+        <ul class="service-bullets">
+          <li>Logo & wordmark design</li>
+          <li>Visual identity & brand guidelines</li>
+          <li>Color, typography & tone of voice</li>
+          <li>Brand positioning strategy</li>
+          <li>Marketing collateral & assets</li>
+        </ul>
+      </div>
+      <div class="service-card fade-up fade-up-delay-3">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <h3>Web Development</h3>
+        <p>Clean, performant code that brings the design to life — no WordPress bloat, no shortcuts.</p>
+        <ul class="service-bullets">
+          <li>Next.js & React development</li>
+          <li>Webflow & Framer build-outs</li>
+          <li>CMS integration & custom backends</li>
+          <li>Performance optimization</li>
+          <li>Analytics & tracking setup</li>
+        </ul>
+      </div>
+      <div class="service-card fade-up fade-up-delay-4">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </div>
+        <h3>Copywriting</h3>
+        <p>Words that sell — messaging crafted to resonate, persuade, and convert your ideal client.</p>
+        <ul class="service-bullets">
+          <li>Website copy & hero messaging</li>
+          <li>Value proposition development</li>
+          <li>Email sequences & funnels</li>
+          <li>SEO-optimized page copy</li>
+          <li>Brand voice & tone guidelines</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WHY WORK WITH ME -->
+<section class="section">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div class="tag">Why Me</div>
+      <h2>Not just another designer</h2>
+      <p>The difference between a pretty site and one that grows your business comes down to this.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card fade-up fade-up-delay-1">
+        <span class="why-icon">🎯</span>
+        <h3>Strategy before pixels</h3>
+        <p>Every project starts with understanding your business model, audience, and conversion goals — then designing backwards from the outcome you want.</p>
+      </div>
+      <div class="why-card fade-up fade-up-delay-2">
+        <span class="why-icon">⚡</span>
+        <h3>Design + Code, end-to-end</h3>
+        <p>I handle design and development, eliminating the handoff friction that kills quality. What you see in Figma is exactly what ships to production.</p>
+      </div>
+      <div class="why-card fade-up fade-up-delay-3">
+        <span class="why-icon">📈</span>
+        <h3>Measurably better results</h3>
+        <p>My clients see real lifts — in signups, bookings, and revenue. I obsess over the metrics that matter, not vanity design awards.</p>
+      </div>
+      <div class="why-card fade-up fade-up-delay-1">
+        <span class="why-icon">🚀</span>
+        <h3>Fast without cutting corners</h3>
+        <p>Most agencies take 3 months for what I deliver in 3–4 weeks. Speed comes from process, experience, and focus — not rushing.</p>
+      </div>
+      <div class="why-card fade-up fade-up-delay-2">
+        <span class="why-icon">🤝</span>
+        <h3>Direct, transparent partnership</h3>
+        <p>You talk to me — not an account manager. I'm in your Slack, on your calls, and invested in your success like a co-founder, not a vendor.</p>
+      </div>
+      <div class="why-card fade-up fade-up-delay-3">
+        <span class="why-icon">🔁</span>
+        <h3>Built for the long-term</h3>
+        <p>I build systems, not one-offs. Your brand, code, and content strategy are all designed to scale with you — so you never have to start over.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROCESS -->
+<section class="section" id="process">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div class="tag">Process</div>
+      <h2>Simple. Clear. No surprises.</h2>
+      <p>From first call to launch, here's exactly how we work together.</p>
+    </div>
+    <div class="process-list">
+      <div class="process-step fade-up fade-up-delay-1">
+        <div class="process-step-left">
+          <div class="process-num">01</div>
+          <div class="process-line"></div>
+        </div>
+        <div class="process-content">
+          <h3>Discovery Call</h3>
+          <p>We start with a 45-minute call to understand your goals, audience, competitive landscape, and what success looks like. No pitching — just listening and asking the right questions.</p>
+        </div>
+      </div>
+      <div class="process-step fade-up fade-up-delay-2">
+        <div class="process-step-left">
+          <div class="process-num">02</div>
+          <div class="process-line"></div>
+        </div>
+        <div class="process-content">
+          <h3>Strategy & Proposal</h3>
+          <p>I develop a tailored scope, timeline, and pricing — with clear deliverables and milestones. No vague quotes, no hourly billing surprises. You know exactly what you're getting.</p>
+        </div>
+      </div>
+      <div class="process-step fade-up fade-up-delay-3">
+        <div class="process-step-left">
+          <div class="process-num">03</div>
+          <div class="process-line"></div>
+        </div>
+        <div class="process-content">
+          <h3>Design & Build</h3>
+          <p>I work in focused sprints with regular async check-ins. You see progress weekly — not in a big reveal at the end. Feedback loops are tight, revisions are structured, and nothing ships without your sign-off.</p>
+        </div>
+      </div>
+      <div class="process-step fade-up fade-up-delay-4">
+        <div class="process-step-left">
+          <div class="process-num">04</div>
+          <div class="process-line"></div>
+        </div>
+        <div class="process-content">
+          <h3>Launch & Handoff</h3>
+          <p>We go live together. You get a full walkthrough, documented assets, and 2 weeks of post-launch support included. No handoff cliff — I make sure everything runs smoothly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TESTIMONIALS -->
+<section class="section" id="testimonials">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div class="tag">Testimonials</div>
+      <h2>What clients say</h2>
+      <p>Don't take my word for it — here's what real clients have experienced.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card fade-up fade-up-delay-1">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">"Morgan completely transformed how we show up online. Our trial signups jumped 3x in the first month after launch. The copy, design, and positioning are all spot-on — and the whole project took less than 4 weeks."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background: linear-gradient(135deg, #4f7cff, #7c4fff);">JK</div>
+          <div>
+            <div class="testi-name">James Keller</div>
+            <div class="testi-role">CEO, Axiom Labs</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fade-up fade-up-delay-2">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">"I've worked with agencies and I've worked with Morgan. The difference is night and day. Morgan actually understands our business, communicates like a real partner, and delivers work that we're genuinely proud to show prospects."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background: linear-gradient(135deg, #22c55e, #16a34a);">SR</div>
+          <div>
+            <div class="testi-name">Sofia Reyes</div>
+            <div class="testi-role">Founder, Meridian Studio</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fade-up fade-up-delay-3">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">"We hired Morgan for a landing page refresh and ended up bringing them in for our full rebrand. The ROI was obvious from day one. Leads from our site are now our highest-converting channel by far."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background: linear-gradient(135deg, #f59e0b, #d97706);">AT</div>
+          <div>
+            <div class="testi-name">Alex Torres</div>
+            <div class="testi-role">CMO, NovaPulse</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FAQ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div class="tag">FAQ</div>
+      <h2>Common questions</h2>
+      <p>Everything you need to know before reaching out.</p>
+    </div>
+    <div class="faq-list fade-up fade-up-delay-1">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How much does a typical project cost?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Projects are scoped individually based on complexity and deliverables. Most website projects range from $4,000–$12,000. Branding projects start at $2,500. I offer fixed-price packages so there are no billing surprises. We'll discuss budget on our call and I'll scope accordingly.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How long does a project take?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">A focused landing page or brand refresh typically takes 2–3 weeks. Full website design + development runs 4–6 weeks from kickoff to launch. Timeline depends on scope and how quickly feedback rounds move — I always provide a milestone plan upfront so you know exactly what to expect.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do you work with early-stage startups?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Yes — and some of my best work is with early-stage founders who need to move fast and make a strong first impression. I help startups establish a credible brand presence that can punch above their weight and attract customers, investors, and talent.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What information do you need to get started?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Just book a call — I'll guide the conversation. At a minimum it helps to have a clear sense of your target customer, what you're offering, and what you want the project to achieve. Everything else we can discover together.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do you offer ongoing retainer work?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Yes. Many clients start with a project, then move to a monthly retainer for ongoing design, development, and copy support. Retainers typically start at $1,500/month and are scoped around a set number of hours or deliverables per month.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Are you available right now?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">I take on a limited number of projects at a time to protect quality. I'm currently available for new projects starting Q3 2025. Spots fill quickly — if you're interested, reach out early to hold your place in the queue.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FINAL CTA -->
+<section class="cta-section" id="cta">
+  <div class="cta-bg"></div>
+  <div class="container cta-inner">
+    <div class="tag" style="margin: 0 auto 24px; display: table;">Let's talk</div>
+    <h2 class="fade-up">Ready to build something that actually converts?</h2>
+    <p class="fade-up fade-up-delay-1">Book a free 45-minute discovery call. No pressure, no pitch — just an honest conversation about your goals and whether we're a good fit.</p>
+    <div class="cta-actions fade-up fade-up-delay-2">
+      <a href="#" class="btn btn-primary" style="font-size: 16px; padding: 16px 32px;">
+        Book a Discovery Call
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 8h10M9 4l4 4-4 4"/>
+        </svg>
+      </a>
+      <a href="mailto:hello@morgancreative.studio" class="btn btn-secondary">Email directly</a>
+    </div>
+    <p class="cta-note">Free 45-min call · No obligation · Spots limited</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a class="footer-logo" href="#">Morgan Creative<span>.</span></a>
+  <div class="footer-links">
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="mailto:hello@morgancreative.studio">Contact</a>
+  </div>
+  <span class="footer-copy">© 2025 Morgan Creative Studio</span>
+</footer>
+
+<script>
+// Navbar scroll effect
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// Fade-up on scroll
+const fadeEls = document.querySelectorAll('.fade-up');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+fadeEls.forEach(el => observer.observe(el));
+
+// Trigger hero elements immediately
+document.querySelectorAll('.hero .fade-up').forEach((el, i) => {
+  setTimeout(() => el.classList.add('visible'), 100 + i * 120);
+});
+
+// FAQ accordion
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const answer = item.querySelector('.faq-a');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(openItem => {
+    openItem.classList.remove('open');
+    openItem.querySelector('.faq-a').style.maxHeight = '0';
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    answer.style.maxHeight = answer.scrollHeight + 'px';
+  }
+}
+</script>
+</body>
+</html>
